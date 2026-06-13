@@ -1,0 +1,58 @@
+# ============================================
+# LanConnect 通用服务器连接插件配置文件
+# 支持指令元规则系统，规则文件位于 config/rules/ 目录下
+# ============================================
+
+server:
+  # 目标服务器地址
+  host: "2b2t.xin"
+  # 目标服务器端口
+  port: 25565
+  # 判定为登录服的游戏模式（ADVENTURE/SURVIVAL/CREATIVE/SPECTATOR）
+  loginGameModes:
+    - ADVENTURE
+
+# ---------- 登录配置 ----------
+login:
+  # 是否启用内置自动登录流程
+  enabled: false
+  # 登录密码（用于替换 {password} 模板）
+  password: ""
+  # 步骤间冷却时间（毫秒）
+  cooldown: 2000
+  # 登录步骤列表
+  steps:
+    # 示例：注册步骤
+    # - matchPatterns:
+    #     - "注册"
+    #   command: "reg {password} {password}"
+    #   skipWhenMatch: false
+    # 示例：登录步骤
+    # - matchPatterns:
+    #     - "登陆"
+    #   command: "l {password}"
+    #   skipWhenMatch: true
+
+# ---------- 自动重连配置 ----------
+reconnect:
+  # 是否启用自动重连
+  enabled: true
+  # 最大重连次数（-1 为无限）
+  maxAttempts: 10
+  # 重连间隔（秒）
+  delaySeconds: 5
+  # 是否启用指数退避
+  exponentialBackoff: true
+
+# ---------- 调试开关 ----------
+# 开启后会输出更多调试日志，用于排查插件问题
+debug: false
+
+# ---------- 指令元禁用列表 ----------
+# 被禁用的条件指令元在检测时会默认返回 true（视为满足条件）
+# 被禁用的动作指令元不会执行任何操作
+meta:
+  # 禁用的条件指令元列表
+  disabled_conditions: []
+  # 禁用的动作指令元列表
+  disabled_actions: []

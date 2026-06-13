@@ -1,0 +1,21 @@
+# ============================================
+# LanConnect 自动回复规则链
+# ============================================
+# 当收到私聊消息时自动回复
+# ============================================
+
+chain:
+  id: "auto_reply"
+  name: "自动回复"
+  enabled: true
+  repeat: true
+  cooldown: 1000
+  triggerConditions:
+    - meta_id: "cond.chat.private"
+  steps:
+    - id: "reply"
+      name: "发送回复"
+      conditions: []
+      actions:
+        - meta_id: "action.chat.reply"
+      delayAfter: 0

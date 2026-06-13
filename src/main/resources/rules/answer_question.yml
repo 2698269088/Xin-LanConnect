@@ -1,0 +1,30 @@
+# ============================================
+# LanConnect 自动答题规则链
+# ============================================
+# 当检测到答题标题时自动回答
+# ============================================
+
+chain:
+  id: "answer_question"
+  name: "自动答题"
+  enabled: true
+  repeat: false
+  cooldown: 0
+  triggerConditions:
+    - meta_id: "cond.title.question"
+  steps:
+    - id: "answer"
+      name: "发送答案"
+      conditions: []
+      actions:
+        - meta_id: "action.chat.answer"
+      delayAfter: 500
+
+    - id: "wait_next_question"
+      name: "等待下一题"
+      conditions:
+        - meta_id: "cond.title.question"
+      actions:
+        - meta_id: "action.chat.answer"
+      timeout: 30000
+      delayAfter: 500

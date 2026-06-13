@@ -1,0 +1,59 @@
+# ============================================
+# LanConnect 登录流程规则链
+# ============================================
+# 当检测到登录标题时，按顺序执行登录并进入游戏
+# 步骤之间支持延迟，确保操作顺序正确
+# ============================================
+
+chain:
+  id: "login_flow"
+  name: "登录并进入游戏流程"
+  enabled: true
+  repeat: false
+  cooldown: 5000
+  # 触发条件：检测到登录标题
+  triggerConditions:
+    - meta_id: "cond.title.login"
+  steps:
+    # 步骤1：发送登录命令
+    - id: "send_login"
+      name: "发送登录命令"
+      conditions: []  # 无条件，立即执行
+      actions:
+        - meta_id: "action.cmd.login"
+      delayAfter: 500  # 等待500ms
+
+    # 步骤2：等待登录成功
+    - id: "wait_login_success"
+      name: "等待登录成功"
+      conditions:
+        - meta_id: "cond.title.login_success"
+      actions: []  # 条件满足即可，无需动作
+      timeout: 10000  # 最多等待10秒
+      delayAfter: 500
+
+    # 步骤3：记录加入游戏按钮
+    - id: "record_join_button"
+      name: "记录加入游戏按钮"
+      conditions:
+        - meta_id: "cond.item.join_button_record"
+      actions:
+        - meta_id: "action.log.record_join_slot"
+      delayAfter: 200
+
+    # 步骤4：点击加入游戏物品
+    - id: "click_join_item"
+      name: "点击加入游戏物品"
+      conditions:
+        - meta_id: "cond.item.join_button"
+      actions:
+        - meta_id: "action.inv.use_join_item"
+      delayAfter: 1000
+
+    # 步骤5：等待进入游戏服
+    - id: "wait_game_server"
+      name: "等待进入游戏服"
+      conditions:
+        - meta_id: "cond.server.game"
+      actions: []
+      timeout: 15000

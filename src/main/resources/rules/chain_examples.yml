@@ -1,0 +1,188 @@
+# ============================================
+# LanConnect 规则链配置示例
+# ============================================
+# 规则链（RuleChain）是一种顺序执行模型：
+# - 当触发条件满足时，按顺序执行链中的所有步骤
+# - 每个步骤可以有自己的触发条件和动作
+# - 步骤之间支持延迟（delayAfter）
+# - 步骤可以等待特定条件满足（timeout）
+# ============================================
+
+# ---------- 示例1：登录流程链 ----------
+# 当检测到登录标题时，按顺序执行：
+# 1. 发送登录命令
+# 2. 等待登录成功
+# 3. 记录加入游戏按钮
+# 4. 等待出现加入游戏物品
+# 5. 点击加入游戏物品
+# 6. 等待进入游戏服
+chain:
+  id: "login_flow"
+  name: "登录并进入游戏流程"
+  enabled: true
+  repeat: false
+  cooldown: 5000
+  # 触发条件：检测到登录标题
+  triggerConditions:
+    - meta_id: "cond.title.login"
+  steps:
+    # 步骤1：发送登录命令
+    - id: "send_login"
+      name: "发送登录命令"
+      conditions: []  # 无条件，立即执行
+      actions:
+        - meta_id: "action.cmd.login"
+      delayAfter: 500  # 等待500ms
+
+    # 步骤2：等待登录成功
+    - id: "wait_login_success"
+      name: "等待登录成功"
+      conditions:
+        - meta_id: "cond.title.login_success"
+      actions: []  # 条件满足即可，无需动作
+      timeout: 10000  # 最多等待10秒
+      delayAfter: 500
+
+    # 步骤3：记录加入游戏按钮
+    - id: "record_join_button"
+      name: "记录加入游戏按钮"
+      conditions:
+        - meta_id: "cond.item.join_button_record"
+      actions:
+        - meta_id: "action.log.record_join_slot"
+      delayAfter: 200
+
+    # 步骤4：点击加入游戏物品
+    - id: "click_join_item"
+      name: "点击加入游戏物品"
+      conditions:
+        - meta_id: "cond.item.join_button"
+      actions:
+        - meta_id: "action.inv.use_join_item"
+      delayAfter: 1000
+
+    # 步骤5：等待进入游戏服
+    - id: "wait_game_server"
+      name: "等待进入游戏服"
+      conditions:
+        - meta_id: "cond.server.game"
+      actions: []
+      timeout: 15000
+
+# ---------- 示例2：注册流程链 ----------
+chain:
+  id: "register_flow"
+  name: "注册流程"
+  enabled: true
+  repeat: false
+  cooldown: 5000
+  triggerConditions:
+    - meta_id: "cond.title.register"
+  steps:
+    - id: "send_register"
+      name: "发送注册命令"
+      conditions: []
+      actions:
+        - meta_id: "action.cmd.register"
+      delayAfter: 500
+
+    - id: "wait_register_success"
+      name: "等待注册成功"
+      conditions:
+        - meta_id: "cond.title.register_success"
+      actions: []
+      timeout: 10000
+
+# ---------- 示例3：自动回复链 ----------
+# 当收到特定私聊消息时，按顺序回复
+chain:
+  id: "auto_reply"
+  name: "自动回复"
+  enabled: true
+  repeat: true  # 可重复触发
+  cooldown: 1000
+  triggerConditions:
+    - meta_id: "cond.chat.private"
+  steps:
+    - id: "reply"
+      name: "发送回复"
+      conditions: []
+      actions:
+        - meta_id: "action.chat.reply"
+      delayAfter: 0
+
+# ---------- 示例4：队列等待链 ----------
+chain:
+  id: "queue_wait"
+  name: "队列等待"
+  enabled: true
+  repeat: false
+  cooldown: 0
+  triggerConditions:
+    - meta_id: "cond.title.queue"
+  steps:
+    - id: "wait_queue"
+      name: "等待队列结束"
+      conditions:
+        - meta_id: "cond.title.queue_end"
+      actions: []
+      timeout: 300000  # 最多等待5分钟
+      delayAfter: 500
+
+    - id: "send_login_after_queue"
+      name: "队列结束后登录"
+      conditions: []
+      actions:
+        - meta_id: "action.cmd.login"
+      delayAfter: 500
+
+# ---------- 示例5：攻击敌对生物链（需要MovementSync） ----------
+chain:
+  id: "attack_hostile"
+  name: "攻击附近敌对生物"
+  enabled: false  # 默认禁用，需要MovementSync
+  repeat: true
+  cooldown: 500
+  triggerConditions:
+    - meta_id: "cond.entity.nearby_hostile"
+  steps:
+    - id: "goto_target"
+      name: "移动到目标"
+      conditions: []
+      actions:
+        - meta_id: "action.ms.goto_target"
+      delayAfter: 100
+
+    - id: "attack_target"
+      name: "攻击目标"
+      conditions:
+        - meta_id: "cond.ms.reached_target"
+      actions:
+        - meta_id: "action.ms.attack"
+      delayAfter: 500
+
+# ---------- 示例6：答题链 ----------
+chain:
+  id: "answer_question"
+  name: "自动答题"
+  enabled: true
+  repeat: false
+  cooldown: 0
+  triggerConditions:
+    - meta_id: "cond.title.question"
+  steps:
+    - id: "answer"
+      name: "发送答案"
+      conditions: []
+      actions:
+        - meta_id: "action.chat.answer"
+      delayAfter: 500
+
+    - id: "wait_next_question"
+      name: "等待下一题"
+      conditions:
+        - meta_id: "cond.title.question"
+      actions:
+        - meta_id: "action.chat.answer"
+      timeout: 30000
+      delayAfter: 500

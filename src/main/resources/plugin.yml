@@ -1,0 +1,4 @@
+name: LanConnect
+main: top.mcocet.Main
+version: 1.0.0-SNAPSHOT
+type: META_PLUGIN

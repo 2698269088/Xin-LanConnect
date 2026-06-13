@@ -1,0 +1,29 @@
+# ============================================
+# LanConnect 队列等待规则链
+# ============================================
+# 当检测到队列标题时，等待队列结束然后登录
+# ============================================
+
+chain:
+  id: "queue_wait"
+  name: "队列等待"
+  enabled: true
+  repeat: false
+  cooldown: 0
+  triggerConditions:
+    - meta_id: "cond.title.queue"
+  steps:
+    - id: "wait_queue"
+      name: "等待队列结束"
+      conditions:
+        - meta_id: "cond.title.queue_end"
+      actions: []
+      timeout: 300000  # 最多等待5分钟
+      delayAfter: 500
+
+    - id: "send_login_after_queue"
+      name: "队列结束后登录"
+      conditions: []
+      actions:
+        - meta_id: "action.cmd.login"
+      delayAfter: 500

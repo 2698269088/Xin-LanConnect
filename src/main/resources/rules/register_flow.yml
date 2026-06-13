@@ -1,0 +1,26 @@
+# ============================================
+# LanConnect 注册流程规则链
+# ============================================
+
+chain:
+  id: "register_flow"
+  name: "注册流程"
+  enabled: true
+  repeat: false
+  cooldown: 5000
+  triggerConditions:
+    - meta_id: "cond.title.register"
+  steps:
+    - id: "send_register"
+      name: "发送注册命令"
+      conditions: []
+      actions:
+        - meta_id: "action.cmd.register"
+      delayAfter: 500
+
+    - id: "wait_register_success"
+      name: "等待注册成功"
+      conditions:
+        - meta_id: "cond.title.register_success"
+      actions: []
+      timeout: 10000
